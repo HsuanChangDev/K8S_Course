@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment # define what kind of work we are doing
+metadata:
+  name: second-app-deployment
+spec:
+  replicas: 3
+  selector:
+    # matchLabels:
+    #   app: second-app
+    #   tier: backend
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - second-app
+  template: # create pods and define the container inside it
+    metadata:
+      labels:
+        app: second-app # define the label for the pod
+        tier: backend
+    spec:
+      containers:
+      - name: second-app-container
+        image: samchangdev/kub-first-app:2
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+    
