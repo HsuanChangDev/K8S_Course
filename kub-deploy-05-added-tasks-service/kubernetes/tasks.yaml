@@ -1,5 +1,5 @@
-apiVersion: storage.k8s.io/v1
 kind: StorageClass
+apiVersion: storage.k8s.io/v1
 metadata:
   name: efs-sc
 provisioner: efs.csi.aws.com
@@ -9,7 +9,7 @@ kind: PersistentVolume
 metadata:
   name: efs-pv
 spec:
-  capacity:
+  capacity: 
     storage: 5Gi
   volumeMode: Filesystem
   accessModes:
@@ -34,10 +34,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: users-service
+  name: tasks-service
 spec:
   selector:
-    app: users
+    app: tasks
   type: LoadBalancer
   ports:
     - protocol: TCP
@@ -47,20 +47,20 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: users-deployment
+  name: tasks-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: users
+      app: tasks
   template:
     metadata:
       labels:
-        app: users
+        app: tasks
     spec:
       containers:
-        - name: users-api
-          image: samchangdev/kub-dep-users:latest
+        - name: tasks-api
+          image: samchangdev/kub-dep-tasks:latest
           env:
             - name: MONGODB_CONNECTION_URI
               value: 'mongodb+srv://k8s-tester:yvvmdxhp7otqU3gx@k8s-cluster.lfcfc.mongodb.net/users?retryWrites=true&w=majority&appName=k8s-cluster'
@@ -68,8 +68,8 @@ spec:
               value: 'auth-service.default:3000'
           volumeMounts:
             - name: efs-vol
-              mountPath: /app/users
+              mountPath: /app/tasks
       volumes:
         - name: efs-vol
-          persistentVolumeClaim:
+          persistentVolumeClaim: 
             claimName: efs-pvc
